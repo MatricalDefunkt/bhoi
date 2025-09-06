@@ -34,13 +34,40 @@ app.get('/ping', (req, res) => {
   });
 });
 
+// CPU stress endpoint for testing autoscaling
+app.get('/stress', (req, res) => {
+  const duration = parseInt(req.query.duration) || 5000; // Default 5 seconds
+  const maxDuration = 30000; // Max 30 seconds
+  
+  const actualDuration = Math.min(duration, maxDuration);
+  const timestamp = new Date().toISOString();
+  const hostname = require('os').hostname();
+  
+  console.log(`[${timestamp}] Stress test started on pod ${hostname} for ${actualDuration}ms`);
+  
+  // CPU intensive task
+  const startTime = Date.now();
+  while (Date.now() - startTime < actualDuration) {
+    Math.random() * Math.random();
+  }
+  
+  res.status(200).json({
+    message: 'stress test completed',
+    duration: `${actualDuration}ms`,
+    timestamp: timestamp,
+    hostname: hostname,
+    pid: process.pid
+  });
+});
+
 // Root endpoint
 app.get('/', (req, res) => {
   res.status(200).json({
     message: 'Ping Server is running!',
     endpoints: {
       '/ping': 'GET - Returns pong with server info',
-      '/health': 'GET - Health check endpoint'
+      '/health': 'GET - Health check endpoint',
+      '/stress': 'GET - CPU stress test (query: ?duration=5000)'
     },
     hostname: require('os').hostname(),
     timestamp: new Date().toISOString()

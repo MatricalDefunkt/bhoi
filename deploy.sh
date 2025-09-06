@@ -15,6 +15,21 @@ fi
 echo "🔧 Setting kubectl context to kind cluster..."
 kubectl cluster-info --context kind-ping-server-cluster
 
+echo "📊 Installing metrics server for HPA..."
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+# Patch metrics server for kind (insecure TLS)
+kubectl patch deployment metrics-server -n kube-system --type='json' -p='[
+  {
+    "op": "add",
+    "path": "/spec/template/spec/containers/0/args/-",
+    "value": "--kubelet-insecure-tls"
+  }
+]'
+
+echo "⏳ Waiting for metrics server to be ready..."
+kubectl wait --for=condition=ready pod -l k8s-app=metrics-server -n kube-system --timeout=60s
+
 echo "🔨 Building Docker image..."
 docker build -t ping-server:latest .
 
