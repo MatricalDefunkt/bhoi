@@ -13,7 +13,7 @@ A simple Express.js "ping" server designed to be deployed and scaled on Kubernet
 
 1. **Setup the environment:**
    ```bash
-   chmod +x setup.sh deploy.sh
+   chmod +x setup.sh deploy.sh fix-metrics-server.sh test-autoscaling.sh
    ./setup.sh
    ```
 
@@ -22,7 +22,12 @@ A simple Express.js "ping" server designed to be deployed and scaled on Kubernet
    ./deploy.sh
    ```
 
-3. **Test the service:**
+3. **If metrics server has issues (common with kind):**
+   ```bash
+   ./fix-metrics-server.sh
+   ```
+
+4. **Test the service:**
    ```bash
    curl http://localhost:30080/ping
    ```
@@ -37,6 +42,8 @@ A simple Express.js "ping" server designed to be deployed and scaled on Kubernet
 ├── kind-config.yaml       # Kind cluster configuration
 ├── setup.sh              # Environment setup script
 ├── deploy.sh              # Deployment script
+├── fix-metrics-server.sh  # Metrics server troubleshooting
+├── test-autoscaling.sh    # Autoscaling load test
 └── k8s/
     ├── deployment.yaml    # Kubernetes deployment
     ├── service.yaml       # Kubernetes services
