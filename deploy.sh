@@ -9,7 +9,7 @@ docker build -t ping-server:latest .
 
 echo "📦 Loading image into kind cluster (if using kind)..."
 # Uncomment the next line if you're using kind
-# kind load docker-image ping-server:latest
+kind load docker-image ping-server:latest
 
 echo "🚀 Deploying to Kubernetes..."
 kubectl apply -f k8s/deployment.yaml
